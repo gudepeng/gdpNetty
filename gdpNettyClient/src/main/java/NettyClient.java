@@ -15,7 +15,10 @@ import java.io.InputStreamReader;
  * Created by 我是金角大王 on 2017-10-22.
  */
 public class NettyClient {
-    public static void main(String[] args) throws InterruptedException {
+
+
+    public String getServerMessage(String message){
+        final ServerChannelInboundHandler serverchannelinboundhandler = new ServerChannelInboundHandler();
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();
@@ -30,53 +33,18 @@ public class NettyClient {
                             .addLast(new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()))
                             .addLast(new StringDecoder())
                             .addLast(new StringEncoder())
-                            .addLast(new SimpleChannelInboundHandler<String>() {
-                                @Override
-                                public void channelRead0(ChannelHandlerContext ctx, String s) throws Exception {
-                                    // 收到消息直接打印输出
-                                    System.out.println("服务端消息 : " + s);
-                                    //ctx.close();
-                                }
-                                @Override
-                                public void channelActive(ChannelHandlerContext ctx) throws Exception {
-                                    System.out.println("发起服务端链接");
-                                    super.channelActive(ctx);
-                                }
-                                @Override
-                                public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-                                    System.out.println("客户端关闭");
-                                    super.channelInactive(ctx);
-                                }
-                                @Override
-                                public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-                                    System.out.println("发生错误");
-                                    cause.printStackTrace();
-                                    ctx.close();
-                                }
-                            });
+                            .addLast(serverchannelinboundhandler);
                 }
             });
             // 连接服务端
-            Channel ch = b.connect("127.0.0.1", 8099).sync().channel();
-            // 控制台输入
-            BufferedReader in = new BufferedReader(new InputStreamReader(
-                    System.in));
-            for (;;) {
-                String line = in.readLine();
-                if (line == null) {
-                    continue;
-                }
-                /*
-                 * 向服务端发送在控制台输入的文本 并用"\r\n"结尾 之所以用\r\n结尾 是因为我们在handler中添加了
-                 * DelimiterBasedFrameDecoder 帧解码。
-                 * 这个解码器是一个根据\n符号位分隔符的解码器。所以每条消息的最后必须加上\n否则无法识别和解码
-                 */
-                ch.writeAndFlush(line + "\r\n");
-            }
+            ChannelFuture ch = b.connect("127.0.0.1", 8099).sync();
+            ch.channel().writeAndFlush(message+"\n").sync();
+            ch.channel().closeFuture().sync();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             group.shutdownGracefully();
         }
+        return serverchannelinboundhandler.getResponse();
     }
 }

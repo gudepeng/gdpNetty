@@ -16,6 +16,7 @@ public class NettyServer {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
+            String csdemo="";
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup);
             b.channel(NioServerSocketChannel.class);
@@ -33,7 +34,7 @@ public class NettyServer {
                                     // 收到消息直接打印输出
                                     System.out.println(ctx.channel().remoteAddress() + "客戶端消息 :" + s);
                                     // 返回客户端消息 - 我已经接收到了你的消息
-                                    ctx.writeAndFlush("收到你的消息\n");
+                                    ctx.writeAndFlush("收到你的消息\n").addListener(ChannelFutureListener.CLOSE); ;
                                 }
                                 @Override
                                 public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -55,7 +56,7 @@ public class NettyServer {
                             });
                 }
             });
-            b.option(ChannelOption.SO_BACKLOG, 1024);
+            b.option(ChannelOption.SO_BACKLOG, 1);
             b.childOption(ChannelOption.SO_KEEPALIVE, true);
             // 服务器绑定端口监听
             ChannelFuture f = b.bind(8099).sync();

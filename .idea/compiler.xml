@@ -28,7 +28,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="gdpNetty" target="1.5" />
-      <module name="gdpNettyClient" target="1.5" />
+      <module name="gdpNettyClient" target="1.6" />
       <module name="gdpNettyServer" target="1.5" />
     </bytecodeTargetLevel>
   </component>
