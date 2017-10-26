@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/gdpNetty.iml" filepath="$PROJECT_DIR$/gdpNetty.iml" />
       <module fileurl="file://$PROJECT_DIR$/gdpNettyClient/gdpNettyClient.iml" filepath="$PROJECT_DIR$/gdpNettyClient/gdpNettyClient.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gdpNettyCommon/gdpNettyCommon.iml" filepath="$PROJECT_DIR$/gdpNettyCommon/gdpNettyCommon.iml" />
       <module fileurl="file://$PROJECT_DIR$/gdpNettyServer/gdpNettyServer.iml" filepath="$PROJECT_DIR$/gdpNettyServer/gdpNettyServer.iml" />
     </modules>
   </component>

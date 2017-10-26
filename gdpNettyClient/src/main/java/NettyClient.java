@@ -3,13 +3,6 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
-import io.netty.handler.codec.Delimiters;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 
 /**
  * Created by 我是金角大王 on 2017-10-22.
@@ -17,8 +10,8 @@ import java.io.InputStreamReader;
 public class NettyClient {
 
 
-    public String getServerMessage(String message){
-        final ServerChannelInboundHandler serverchannelinboundhandler = new ServerChannelInboundHandler();
+    public RpcResponse getServerMessage(String message){
+        final ClientChannelInboundHandler serverchannelinboundhandler = new ClientChannelInboundHandler();
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();
@@ -29,16 +22,16 @@ public class NettyClient {
                 @Override
                 public void initChannel(SocketChannel socketChannel) throws Exception {
                     socketChannel.pipeline()
-                            // 以("\n")为结尾分割的 解码器
-                            .addLast(new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()))
-                            .addLast(new StringDecoder())
-                            .addLast(new StringEncoder())
+                            .addLast(new RpcEncoder(RpcRequest.class)) // 编码 RPC 请求
+                            .addLast(new RpcDecoder(RpcResponse.class))
                             .addLast(serverchannelinboundhandler);
                 }
             });
             // 连接服务端
             ChannelFuture ch = b.connect("127.0.0.1", 8099).sync();
-            ch.channel().writeAndFlush(message+"\n").sync();
+            RpcRequest request = new RpcRequest();
+            request.setInterfaceName("客户端class名");
+            ch.channel().writeAndFlush(request).sync();
             ch.channel().closeFuture().sync();
         } catch (Exception e) {
             e.printStackTrace();

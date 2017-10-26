@@ -16,6 +16,10 @@
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
         </dependency>
+        <dependency>
+            <groupId>gdp</groupId>
+            <artifactId>gdpNettyCommon</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

@@ -4,16 +4,16 @@ import io.netty.channel.SimpleChannelInboundHandler;
 /**
  * Created by 我是金角大王 on 2017-10-24.
  */
-public class ServerChannelInboundHandler extends SimpleChannelInboundHandler<String> {
-    private String response;
+public class ClientChannelInboundHandler extends SimpleChannelInboundHandler<RpcResponse> {
+    private RpcResponse response;
 
-    public String getResponse() {
+    public RpcResponse getResponse() {
         return this.response;
     }
 
     @Override
-    public void channelRead0(ChannelHandlerContext ctx, String s) throws Exception {
-        System.out.println("接收到值: " + s);
+    public void channelRead0(ChannelHandlerContext ctx, RpcResponse s) throws Exception {
+        System.out.println("接收到值: " + s.getResult());
         this.response=s;
     }
 

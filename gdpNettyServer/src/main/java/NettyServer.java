@@ -16,7 +16,6 @@ public class NettyServer {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
-            String csdemo="";
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup);
             b.channel(NioServerSocketChannel.class);
@@ -24,30 +23,33 @@ public class NettyServer {
                 @Override
                 public void initChannel(SocketChannel socketChannel) throws Exception {
                     socketChannel.pipeline()
-                            // 以("\n")为结尾分割的 解码器
-                            .addLast(new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()))
-                            .addLast(new StringDecoder())
-                            .addLast(new StringEncoder())
-                            .addLast(new SimpleChannelInboundHandler<String>() {
+                            .addLast(new RpcDecoder(RpcRequest.class)) // 解码 RPC 请求
+                            .addLast(new RpcEncoder(RpcResponse.class)) // 编码 RPC 响应
+                            .addLast(new SimpleChannelInboundHandler<RpcRequest>() {
                                 @Override
-                                public void channelRead0(ChannelHandlerContext ctx, String s) throws Exception {
+                                public void channelRead0(ChannelHandlerContext ctx, RpcRequest s) throws Exception {
                                     // 收到消息直接打印输出
-                                    System.out.println(ctx.channel().remoteAddress() + "客戶端消息 :" + s);
+                                    System.out.println(ctx.channel().remoteAddress() + "客戶端消息 :"+s.getInterfaceName());
                                     // 返回客户端消息 - 我已经接收到了你的消息
-                                    ctx.writeAndFlush("收到你的消息\n").addListener(ChannelFutureListener.CLOSE); ;
+                                    RpcResponse response = new RpcResponse();
+                                    response.setResult("服务端执行完成");
+                                    ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+                                    ;
                                 }
+
                                 @Override
                                 public void channelActive(ChannelHandlerContext ctx) throws Exception {
                                     System.out.println(ctx.channel().remoteAddress() + "客户端发来链接");
-                                    ctx.writeAndFlush("欢迎链接\n");
                                     super.channelActive(ctx);
                                 }
+
                                 @Override
                                 public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
                                     System.out.println("发生错误");
                                     cause.printStackTrace();
                                     ctx.close();
                                 }
+
                                 @Override
                                 public void channelInactive(ChannelHandlerContext ctx) throws Exception {
                                     System.out.println("服务端关闭");

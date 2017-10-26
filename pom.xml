@@ -11,21 +11,59 @@
     <modules>
         <module>gdpNettyServer</module>
         <module>gdpNettyClient</module>
+        <module>gdpNettyCommon</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.netty-all>4.1.15.Final</version.netty-all>
+        <version.protostuff>1.0.9</version.protostuff>
+        <version.objenesis>2.1</version.objenesis>
+        <version.peoject>1.0-SNAPSHOT</version.peoject>
     </properties>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>gdp</groupId>
+                <artifactId>gdpNettyCommon</artifactId>
+                <version>${version.peoject}</version>
+            </dependency>
+            <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-all</artifactId>
                 <version>${version.netty-all}</version>
             </dependency>
+            <!-- Protostuff -->
+            <dependency>
+                <groupId>com.dyuproject.protostuff</groupId>
+                <artifactId>protostuff-core</artifactId>
+                <version>${version.protostuff}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.dyuproject.protostuff</groupId>
+                <artifactId>protostuff-runtime</artifactId>
+                <version>${version.protostuff}</version>
+            </dependency>
+            <!-- Objenesis -->
+            <dependency>
+                <groupId>org.objenesis</groupId>
+                <artifactId>objenesis</artifactId>
+                <version>${version.objenesis}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
